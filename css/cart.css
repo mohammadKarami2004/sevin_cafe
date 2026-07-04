@@ -1,0 +1,105 @@
+/*
+ * cart.css
+ * ---------------------------------------------------------------------------
+ * The floating order summary bar + its expandable drawer.
+ * ---------------------------------------------------------------------------
+ */
+
+.cart-bar{
+  position: fixed;
+  left: 1rem; right: 1rem; bottom: 1rem;
+  z-index: 40;
+  background: var(--paper);
+  color: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  transform: translateY(120%);
+  opacity: 0;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  cursor: pointer;
+}
+.cart-bar.show{ transform: translateY(0); opacity: 1; }
+
+.cart-bar .cart-info{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+.cart-bar .cart-count{ font-size: 0.75rem; color: var(--gold-dim); }
+.cart-bar .cart-total{
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--gold-soft);
+  font-variant-numeric: tabular-nums;
+}
+.cart-bar .cart-chevron{
+  font-size: 0.8rem;
+  color: var(--gold);
+  transition: transform 0.3s ease;
+}
+.cart-bar.expanded .cart-chevron{ transform: rotate(180deg); }
+
+.cart-drawer{
+  position: fixed;
+  left: 1rem; right: 1rem; bottom: 1rem;
+  z-index: 39;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.35s ease;
+  padding: 0 1.1rem;
+}
+.cart-drawer.open{
+  max-height: 60vh;
+  overflow-y: auto;
+  opacity: 1;
+  padding: 1rem 1.1rem 5.2rem;
+}
+.cart-drawer h3{
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--gold-soft);
+  margin-bottom: 0.7rem;
+}
+
+.cart-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--line);
+  font-size: 0.88rem;
+}
+.cart-row:last-of-type{ border-bottom: none; }
+.cart-row .cart-row-name{ color: var(--cream); }
+.cart-row .cart-row-sub{
+  color: var(--gold);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.cart-clear{
+  margin-top: 0.8rem;
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
