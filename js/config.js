@@ -10,4 +10,4 @@
  * ---------------------------------------------------------------------------
  */
 
-export const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/19kj1jEehyMrEdV8Ay1tig6mVj1CV0EigsiWqgzCSgas/edit?usp=sharing';
+export const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSzMdarviuNu2ACJCsjrR3I1zwmYLNccKQOx9kQdIphQMlB_FxVoG6LwZif7nXJDxH2ebn3Ldji-bCN/pub?output=csv';
