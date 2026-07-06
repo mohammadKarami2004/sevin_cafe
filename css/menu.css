@@ -12,6 +12,196 @@ main{
   position: relative;
 }
 
+.section{
+  margin-bottom: 3.2rem;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.section.visible{ opacity: 1; transform: translateY(0); }
+
+.section-head{
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.4rem;
+}
+
+.icon-ring{
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  border: 1.5px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  flex: 0 0 auto;
+  position: relative;
+}
+.icon-ring::before{
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1px solid var(--gold-dim);
+  opacity: 0.5;
+}
+.icon-ring svg{ width: 22px; height: 22px; stroke: var(--gold); }
+
+.section-head h2{
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--gold-soft);
+}
+.section-head span{
+  display: block;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: 0.15rem;
+}
+
+/* ---------- item rows ---------- */
+
+.item{
+  padding: 0.85rem 0;
+  border-bottom: 1px dashed var(--line);
+}
+.item:last-child{ border-bottom: none; }
+
+.item-row{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.item-name{
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 56%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: 0.98rem;
+  color: var(--cream);
+}
+
+.item-desc{
+  display: block;
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.35rem;
+  white-space: normal;
+}
+
+.leader{
+  flex: 1 1 auto;
+  border-bottom: 1.5px dotted var(--gold-dim);
+  opacity: 0.6;
+  height: 0.6rem;
+  min-width: 0.4rem;
+}
+
+.item-price{
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--gold);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  flex: 0 0 auto;
+}
+
+.sold-out-badge{
+  font-size: 0.72rem;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-full);
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.item.is-sold-out .item-name,
+.item.is-sold-out .item-price{ color: var(--muted); }
+.item.is-sold-out{ opacity: 0.55; }
+
+/* ---------- quantity stepper ---------- */
+
+.stepper{
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 0 0 auto;
+}
+
+.stepper button{
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  font-size: 1.05rem;
+  line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+.stepper button:active{ background: var(--gold); color: var(--ink); }
+.stepper button:disabled{ opacity: 0.3; cursor: not-allowed; }
+
+.stepper .qty{
+  min-width: 1.2rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--cream);
+}
+
+/* ---------- per-category accents ----------
+   Applied via class="section accent-{categoryId}" (see data.js / menuRenderer.js).
+   Unknown category ids simply keep the default gold styling above. */
+
+.accent-coffee    .icon-ring{ border-color: var(--accent-coffee); }
+.accent-coffee    .icon-ring svg{ stroke: var(--accent-coffee); }
+.accent-coffee    .item-price{ color: var(--accent-coffee); }
+.accent-coffee    .stepper button{ border-color: var(--accent-coffee); color: var(--accent-coffee); }
+.accent-coffee    .stepper button:active{ background: var(--accent-coffee); color: var(--ink); }
+
+.accent-cold      .icon-ring{ border-color: var(--accent-cold); }
+.accent-cold      .icon-ring svg{ stroke: var(--accent-cold); }
+.accent-cold      .item-price{ color: var(--accent-cold); }
+.accent-cold      .stepper button{ border-color: var(--accent-cold); color: var(--accent-cold); }
+.accent-cold      .stepper button:active{ background: var(--accent-cold); color: var(--ink); }
+
+.accent-herbal    .icon-ring{ border-color: var(--accent-herbal); }
+.accent-herbal    .icon-ring svg{ stroke: var(--accent-herbal); }
+.accent-herbal    .item-price{ color: var(--accent-herbal); }
+.accent-herbal    .stepper button{ border-color: var(--accent-herbal); color: var(--accent-herbal); }
+.accent-herbal    .stepper button:active{ background: var(--accent-herbal); color: var(--ink); }
+
+.accent-dessert   .icon-ring{ border-color: var(--accent-dessert); }
+.accent-dessert   .icon-ring svg{ stroke: var(--accent-dessert); }
+.accent-dessert   .item-price{ color: var(--accent-dessert); }
+.accent-dessert   .stepper button{ border-color: var(--accent-dessert); color: var(--accent-dessert); }
+.accent-dessert   .stepper button:active{ background: var(--accent-dessert); color: var(--ink); }
+
+.accent-breakfast .icon-ring{ border-color: var(--accent-breakfast); }
+.accent-breakfast .icon-ring svg{ stroke: var(--accent-breakfast); }
+.accent-breakfast .item-price{ color: var(--accent-breakfast); }
+.accent-breakfast .stepper button{ border-color: var(--accent-breakfast); color: var(--accent-breakfast); }
+.accent-breakfast .stepper button:active{ background: var(--accent-breakfast); color: var(--ink); }/*
+ * menu.css
+ * ---------------------------------------------------------------------------
+ * The menu itself: category sections, item rows, quantity stepper.
+ * ---------------------------------------------------------------------------
+ */
+
+main{
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2.5rem 1.4rem 6rem;
+  position: relative;
+}
+
 .loading-text{
   text-align: center;
   color: var(--muted);
