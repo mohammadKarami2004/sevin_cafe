@@ -1,0 +1,47 @@
+/*
+ * tokens.css
+ * ---------------------------------------------------------------------------
+ * Single source of truth for design values (colors, fonts, radii).
+ * Every other stylesheet reads from these variables instead of hardcoding
+ * values, so the whole theme can be restyled from this one file.
+ * ---------------------------------------------------------------------------
+ */
+
+:root{
+  /* base surfaces */
+  --ink:        #2A1C13; /* page background — warm espresso brown */
+  --paper:      #3A2A1C; /* raised surfaces: cart bar, cart drawer   */
+  --coin:       #0C0906; /* pure-black badge backing, matches the logo art */
+
+  /* brand gold */
+  --gold:       #D4AF37;
+  --gold-soft:  #EAD08B;
+  --gold-dim:   #A6813F;
+
+  /* text */
+  --cream:      #F6EEE0;
+  --muted:      #BBA786;
+
+  /* structural */
+  --line: rgba(212, 175, 55, 0.25);
+
+  /* per-category accent colors — used by .accent-{categoryId} in menu.css.
+     Add a new --accent-<id> here if a new category needs its own color;
+     otherwise unknown categories simply fall back to --gold. */
+  --accent-coffee:    #D4AF37;
+  --accent-cold:      #7FB0BD;
+  --accent-herbal:    #93AC72;
+  --accent-dessert:   #C97D8A;
+  --accent-breakfast: #DB9A4E;
+
+  /* radii */
+  --radius-sm:   0.7rem;
+  --radius-md:   1.1rem;
+  --radius-full: 999px;
+
+  /* typography */
+  --font-body:     'Vazirmatn', sans-serif;
+  --font-display:  'Aref Ruqaa', serif;
+  --font-wordmark: 'Cinzel', serif;
+  --font-script:   'Dancing Script', cursive;
+}

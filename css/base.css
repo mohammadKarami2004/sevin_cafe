@@ -1,0 +1,51 @@
+/*
+ * base.css
+ * ---------------------------------------------------------------------------
+ * Reset + global defaults. No component-specific rules here.
+ * ---------------------------------------------------------------------------
+ */
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html{
+  scroll-behavior: smooth;
+}
+
+body{
+  background: var(--ink);
+  color: var(--cream);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior: auto; }
+  *{
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* decorative gold ring stains — echo the logo's ring motif, reused across sections */
+.stain{
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  opacity: 0.10;
+  pointer-events: none;
+}
+.stain::after{
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  opacity: 0.5;
+}
