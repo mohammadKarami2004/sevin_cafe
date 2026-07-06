@@ -10,4 +10,4 @@
  * ---------------------------------------------------------------------------
  */
 
-export const SHEET_CSV_URL = 'PASTE_YOUR_PUBLISHED_CSV_LINK_HERE';
+export const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQPPNFzLdFR5MzR-GzjYRcreBSIg4U1wDV8ZBumM4_kGac6PN90rebP8tqBRZnHS1zrZKVkjhqODDiR/pubhtml';
