@@ -55,6 +55,32 @@ function parseSoldOut(raw) {
   return KNOWN_SOLD_OUT_VALUES.has(String(raw || '').trim().toLowerCase());
 }
 
+/**
+ * Guarantees every item id handed to the app is unique, no matter what's
+ * actually typed in the sheet.
+ *
+ * Why this exists: the app tracks cart quantities in a Map keyed by item_id
+ * (see cart.js). If the cafe owner accidentally reuses the same item_id for
+ * two different items — e.g. copy-pasting a row and forgetting to change the
+ * id column — those items silently share one cart entry: tapping "+" on one
+ * of them bumps the quantity shown on all of them. This has already happened
+ * once (six hookah flavors were all given the same item_id).
+ *
+ * Rather than relying on the cafe owner to always remember to set unique
+ * ids (which will happen again), we de-duplicate here: the first row with a
+ * given raw id keeps it as-is; every later row that reuses that same id gets
+ * an auto-incrementing suffix (-2, -3, ...) appended. This runs on every
+ * sheet load, so it's self-healing even if the sheet is edited badly again.
+ */
+function makeIdDeduper() {
+  const seenCounts = new Map();
+  return function dedupe(rawId) {
+    const count = (seenCounts.get(rawId) || 0) + 1;
+    seenCounts.set(rawId, count);
+    return count === 1 ? rawId : `${rawId}-${count}`;
+  };
+}
+
 /** Turns parsed CSV rows (with a header row) into the MENU array shape. */
 function rowsToMenu(rows) {
   const [headerRow, ...dataRows] = rows;
@@ -75,6 +101,7 @@ function rowsToMenu(rows) {
 
   const categoriesById = new Map();
   const categoryOrder = [];
+  const dedupeId = makeIdDeduper();
 
   dataRows.forEach((row, rowIndex) => {
     const categoryId = (row[idx.categoryId] || '').trim();
@@ -92,7 +119,8 @@ function rowsToMenu(rows) {
       categoryOrder.push(categoryId);
     }
 
-    const itemId = (row[idx.itemId] || '').trim() || `${categoryId}-row-${rowIndex}`;
+    const rawItemId = (row[idx.itemId] || '').trim() || `${categoryId}-row-${rowIndex}`;
+    const itemId = dedupeId(rawItemId); // guarantees uniqueness even if the sheet has duplicates
 
     categoriesById.get(categoryId).items.push({
       id: itemId,
