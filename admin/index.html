@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پنل مدیریت منو | سوین</title>
+<style>
+  :root{
+    --ink: #2A1C13;
+    --paper: #3A2A1C;
+    --gold: #D4AF37;
+    --gold-soft: #EAD08B;
+    --gold-dim: #A6813F;
+    --cream: #F6EEE0;
+    --muted: #BBA786;
+    --line: rgba(212,175,55,0.25);
+    --danger: #C97D8A;
+    --ok: #93AC72;
+  }
+  *{ box-sizing: border-box; }
+  body{
+    margin: 0;
+    background: var(--ink);
+    color: var(--cream);
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    padding: 1.2rem;
+    padding-bottom: 6rem;
+    max-width: 760px;
+    margin-inline: auto;
+  }
+  h1{ font-size: 1.3rem; color: var(--gold-soft); margin: 0 0 0.3rem; }
+  .subtitle{ color: var(--muted); font-size: 0.85rem; margin-bottom: 1.2rem; }
+
+  details.settings{
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 0.9rem;
+    padding: 0.9rem 1rem;
+    margin-bottom: 1.2rem;
+  }
+  details.settings summary{ cursor: pointer; font-weight: 700; color: var(--gold-soft); }
+  .field{ margin-top: 0.7rem; }
+  .field label{ display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 0.3rem; }
+  .field input{
+    width: 100%;
+    background: var(--ink);
+    border: 1px solid var(--line);
+    color: var(--cream);
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.7rem;
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+  .field.inline{ display: flex; align-items: center; gap: 0.5rem; }
+  .field.inline input[type=checkbox]{ width: auto; }
+  .field.inline label{ margin: 0; }
+
+  .toolbar{ display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  button{
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 0.6rem;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--cream);
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+  }
+  button.primary{ background: var(--gold); color: var(--ink); border-color: var(--gold); font-weight: 700; }
+  button.danger{ border-color: var(--danger); color: var(--danger); }
+  button:disabled{ opacity: 0.4; cursor: not-allowed; }
+
+  #status{ font-size: 0.85rem; color: var(--gold-dim); margin-bottom: 1rem; min-height: 1.2em; white-space: pre-wrap; }
+  #status.error{ color: var(--danger); }
+  #status.success{ color: var(--ok); }
+
+  .category{ background: var(--paper); border: 1px solid var(--line); border-radius: 0.9rem; margin-bottom: 1rem; padding: 0.9rem; }
+  .category-head{ display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.7rem; flex-wrap: wrap; }
+  .drag-handle{ cursor: grab; color: var(--gold-dim); font-size: 1.1rem; padding: 0 0.3rem; user-select: none; }
+  .category-head input[type=text]{
+    background: var(--ink); border: 1px solid var(--line); color: var(--cream);
+    border-radius: 0.5rem; padding: 0.4rem 0.6rem; font-size: 0.85rem; font-family: inherit;
+  }
+  .cat-title{ flex: 1 1 40%; font-weight: 700; }
+  .cat-subtitle{ flex: 1 1 30%; }
+  .cat-icon{ flex: 0 0 auto; background: var(--ink); color: var(--cream); border: 1px solid var(--line); border-radius: 0.5rem; padding: 0.4rem; font-size: 0.8rem; }
+
+  .items{ margin-top: 0.4rem; }
+  .item-row{
+    display: flex; align-items: center; gap: 0.5rem; background: var(--ink);
+    border: 1px dashed var(--line); border-radius: 0.6rem; padding: 0.5rem 0.6rem; margin-bottom: 0.45rem; flex-wrap: wrap;
+  }
+  .item-row input[type=text]{
+    background: transparent; border: none; border-bottom: 1px solid var(--line);
+    color: var(--cream); font-family: inherit; font-size: 0.85rem; padding: 0.25rem 0.1rem;
+  }
+  .item-row .i-name{ flex: 1 1 26%; font-weight: 600; }
+  .item-row .i-desc{ flex: 1 1 26%; color: var(--muted); }
+  .item-row .i-price{ flex: 0 0 90px; text-align: center; }
+  .sold-toggle{ flex: 0 0 auto; display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+  .sold-toggle input{ accent-color: var(--danger); }
+  .item-row .remove-item{ flex: 0 0 auto; border: none; background: transparent; color: var(--danger); font-size: 1rem; padding: 0.2rem 0.4rem; }
+
+  .row-actions{ display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+  .row-actions button{ font-size: 0.78rem; padding: 0.4rem 0.8rem; }
+
+  .sortable-ghost{ opacity: 0.35; }
+
+  #saveBar{
+    position: fixed; left: 0; right: 0; bottom: 0; background: var(--paper);
+    border-top: 1px solid var(--line); padding: 0.8rem 1.2rem; display: flex;
+    justify-content: flex-end; gap: 0.6rem;
+  }
+  .loading{ text-align: center; color: var(--muted); padding: 2rem 0; }
+  .hint{ font-size: 0.75rem; color: var(--muted); margin-top: 0.4rem; line-height: 1.6; }
+  a{ color: var(--gold-soft); }
+</style>
+</head>
+<body>
+
+<h1>پنل مدیریت منو — سوین</h1>
+<p class="subtitle">این صفحه مستقیم فایل منو رو توی گیت‌هاب ویرایش می‌کنه — بدون نیاز به گوگل‌شیت.</p>
+
+<details class="settings" id="settingsPanel" open>
+  <summary>تنظیمات اتصال به گیت‌هاب</summary>
+  <div class="field">
+    <label>GitHub Personal Access Token (fine-grained، فقط دسترسی Contents همین ریپو)</label>
+    <input type="password" id="tokenInput" placeholder="github_pat_...">
+  </div>
+  <div class="field">
+    <label>صاحب ریپازیتوری (username گیت‌هاب)</label>
+    <input type="text" id="ownerInput" placeholder="مثلاً sevin-cafe">
+  </div>
+  <div class="field">
+    <label>اسم ریپازیتوری</label>
+    <input type="text" id="repoInput" placeholder="مثلاً sevin-menu">
+  </div>
+  <div class="field">
+    <label>برنچ</label>
+    <input type="text" id="branchInput" value="main">
+  </div>
+  <div class="field">
+    <label>مسیر فایل منو داخل ریپو</label>
+    <input type="text" id="pathInput" value="data/menu.json">
+  </div>
+  <div class="field inline">
+    <input type="checkbox" id="rememberInput">
+    <label for="rememberInput">این مرورگر رو به خاطر بسپار (فقط برای دستگاه شخصی خودت بزن)</label>
+  </div>
+  <div class="toolbar" style="margin-top:0.8rem;">
+    <button id="connectBtn" class="primary">اتصال و بارگذاری منو</button>
+  </div>
+  <p class="hint">
+    توکن فقط توی همین مرورگر می‌مونه (هیچ‌جا فرستاده نمی‌شه جز مستقیم به سرورهای گیت‌هاب).
+    راهنمای ساخت توکن رو توی README همین پوشه بخون.
+  </p>
+</details>
+
+<div id="status"></div>
+
+<div class="toolbar" id="editToolbar" style="display:none;">
+  <button id="addCategoryBtn">+ دسته‌ی جدید</button>
+  <button id="reloadBtn">بارگذاری مجدد از گیت‌هاب</button>
+</div>
+
+<div id="app"></div>
+
+<div id="saveBar" style="display:none;">
+  <button id="saveBtn" class="primary" disabled>ذخیره تغییرات (commit روی گیت‌هاب)</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script>
+  const KNOWN_ICONS = ['coffee', 'cold', 'herbal', 'dessert', 'breakfast', 'default'];
+
+  let menu = [];
+  let fileSha = null;
+  let dirty = false;
+  let conn = null; // { token, owner, repo, branch, path }
+
+  const els = {
+    settingsPanel: document.getElementById('settingsPanel'),
+    token: document.getElementById('tokenInput'),
+    owner: document.getElementById('ownerInput'),
+    repo: document.getElementById('repoInput'),
+    branch: document.getElementById('branchInput'),
+    path: document.getElementById('pathInput'),
+    remember: document.getElementById('rememberInput'),
+    connectBtn: document.getElementById('connectBtn'),
+    status: document.getElementById('status'),
+    editToolbar: document.getElementById('editToolbar'),
+    app: document.getElementById('app'),
+    saveBar: document.getElementById('saveBar'),
+    saveBtn: document.getElementById('saveBtn')
+  };
+
+  // ---------- persistence of non-secret connection settings ----------
+  (function restoreSettings() {
+    const saved = localStorage.getItem('sevinAdminSettings');
+    if (!saved) return;
+    try {
+      const s = JSON.parse(saved);
+      els.owner.value = s.owner || '';
+      els.repo.value = s.repo || '';
+      els.branch.value = s.branch || 'main';
+      els.path.value = s.path || 'data/menu.json';
+      if (s.remember && s.token) {
+        els.token.value = s.token;
+        els.remember.checked = true;
+      }
+    } catch (e) { /* ignore malformed saved settings */ }
+  })();
+
+  function persistSettingsIfWanted() {
+    const remember = els.remember.checked;
+    const payload = {
+      owner: els.owner.value.trim(),
+      repo: els.repo.value.trim(),
+      branch: els.branch.value.trim() || 'main',
+      path: els.path.value.trim() || 'data/menu.json',
+      remember,
+      token: remember ? els.token.value.trim() : ''
+    };
+    localStorage.setItem('sevinAdminSettings', JSON.stringify(payload));
+  }
+
+  // ---------- base64 <-> utf8 helpers (GitHub API stores file content as base64) ----------
+  function utf8ToBase64(str) {
+    const bytes = new TextEncoder().encode(str);
+    let binary = '';
+    bytes.forEach((b) => { binary += String.fromCharCode(b); });
+    return btoa(binary);
+  }
+  function base64ToUtf8(b64) {
+    const binary = atob(b64.replace(/\n/g, ''));
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return new TextDecoder('utf-8').decode(bytes);
+  }
+
+  function setStatus(text, kind) {
+    els.status.textContent = text || '';
+    els.status.className = kind || '';
+  }
+
+  function markDirty() {
+    dirty = true;
+    els.saveBtn.disabled = false;
+  }
+
+  // ---------- GitHub API ----------
+  function apiUrl() {
+    return `https://api.github.com/repos/${conn.owner}/${conn.repo}/contents/${conn.path}`;
+  }
+
+  async function ghRequest(method, body) {
+    const res = await fetch(apiUrl() + (method === 'GET' ? `?ref=${encodeURIComponent(conn.branch)}` : ''), {
+      method,
+      headers: {
+        'Authorization': `token ${conn.token}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: body ? JSON.stringify(body) : undefined
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const msg = data.message || `HTTP ${res.status}`;
+      throw new Error(`GitHub API: ${msg}`);
+    }
+    return data;
+  }
+
+  async function loadFromGithub() {
+    setStatus('در حال اتصال به گیت‌هاب…');
+    const data = await ghRequest('GET');
+    fileSha = data.sha;
+    const jsonText = base64ToUtf8(data.content);
+    const parsed = JSON.parse(jsonText);
+    if (!Array.isArray(parsed)) throw new Error('محتوای menu.json ساختار درستی نداره (باید یه آرایه باشه).');
+    menu = parsed;
+    dirty = false;
+    els.saveBtn.disabled = true;
+    setStatus(`منو بارگذاری شد — ${menu.length} دسته.`, 'success');
+    render();
+  }
+
+  async function saveToGithub() {
+    setStatus('در حال ذخیره روی گیت‌هاب…');
+    els.saveBtn.disabled = true;
+    try {
+      ensureUniqueIds(menu);
+      const content = utf8ToBase64(JSON.stringify(menu, null, 2));
+      const result = await ghRequest('PUT', {
+        message: 'به‌روزرسانی منو از طریق پنل ادمین',
+        content,
+        sha: fileSha,
+        branch: conn.branch
+      });
+      fileSha = result.content.sha;
+      dirty = false;
+      setStatus('ذخیره شد. سایت طی حدود ۱ دقیقه با منوی جدید آپدیت میشه.', 'success');
+    } catch (err) {
+      els.saveBtn.disabled = false;
+      setStatus('خطا در ذخیره: ' + err.message, 'error');
+    }
+  }
+
+  function ensureUniqueIds(categories) {
+    const seen = {};
+    categories.forEach((cat) => {
+      cat.items.forEach((item) => {
+        const base = item.id && item.id.trim() ? item.id.trim() : `${cat.id}-${(item.name || 'item').trim().replace(/\s+/g, '-')}`;
+        let candidate = base;
+        let n = 1;
+        while (seen[candidate]) { n += 1; candidate = `${base}-${n}`; }
+        seen[candidate] = true;
+        item.id = candidate;
+      });
+    });
+  }
+
+  // ---------- rendering ----------
+  function iconOptions(selected) {
+    return KNOWN_ICONS.map((ic) => `<option value="${ic}" ${ic === selected ? 'selected' : ''}>${ic}</option>`).join('');
+  }
+  function escapeAttr(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  }
+
+  function render() {
+    els.app.innerHTML = menu.map((cat, ci) => `
+      <div class="category" data-cat-index="${ci}">
+        <div class="category-head">
+          <span class="drag-handle cat-drag" title="جابه‌جایی دسته">⠿</span>
+          <input type="text" class="cat-title" data-field="title" value="${escapeAttr(cat.title)}" placeholder="عنوان دسته">
+          <input type="text" class="cat-subtitle" data-field="subtitle" value="${escapeAttr(cat.subtitle || '')}" placeholder="زیرعنوان">
+          <select class="cat-icon" data-field="icon">${iconOptions(cat.icon)}</select>
+          <button class="danger remove-category">حذف دسته</button>
+        </div>
+        <div class="items" data-items-for="${ci}">
+          ${cat.items.map((item, ii) => itemRowHtml(item, ci, ii)).join('')}
+        </div>
+        <div class="row-actions"><button class="add-item">+ آیتم جدید</button></div>
+      </div>`).join('');
+
+    attachListeners();
+    attachSortables();
+  }
+
+  function itemRowHtml(item, ci, ii) {
+    return `
+      <div class="item-row" data-cat-index="${ci}" data-item-index="${ii}">
+        <span class="drag-handle item-drag" title="جابه‌جایی آیتم">⠿</span>
+        <input type="text" class="i-name" data-field="name" value="${escapeAttr(item.name)}" placeholder="اسم آیتم">
+        <input type="text" class="i-desc" data-field="desc" value="${escapeAttr(item.desc || '')}" placeholder="توضیح (اختیاری)">
+        <input type="text" class="i-price" data-field="price" value="${item.price}" inputmode="numeric" placeholder="قیمت">
+        <label class="sold-toggle"><input type="checkbox" data-field="soldOut" ${item.soldOut ? 'checked' : ''}> ناموجود</label>
+        <button class="remove-item">✕</button>
+      </div>`;
+  }
+
+  function attachListeners() {
+    document.querySelectorAll('.category').forEach((catEl) => {
+      const ci = Number(catEl.dataset.catIndex);
+      catEl.querySelectorAll('.category-head [data-field]').forEach((input) => {
+        input.addEventListener('input', () => { menu[ci][input.dataset.field] = input.value; markDirty(); });
+      });
+      catEl.querySelector('.remove-category').addEventListener('click', () => {
+        if (!confirm(`دسته‌ی "${menu[ci].title}" و همه‌ی آیتم‌هاش حذف بشه؟`)) return;
+        menu.splice(ci, 1); markDirty(); render();
+      });
+      catEl.querySelector('.add-item').addEventListener('click', () => {
+        menu[ci].items.push({ id: '', name: '', desc: '', price: 0, soldOut: false });
+        markDirty(); render();
+      });
+      catEl.querySelectorAll('.item-row').forEach((rowEl) => {
+        const ii = Number(rowEl.dataset.itemIndex);
+        rowEl.querySelectorAll('[data-field]').forEach((input) => {
+          const evt = input.type === 'checkbox' ? 'change' : 'input';
+          input.addEventListener(evt, () => {
+            const field = input.dataset.field;
+            const item = menu[ci].items[ii];
+            if (field === 'soldOut') item[field] = input.checked;
+            else if (field === 'price') item[field] = Number(input.value.replace(/[^\d]/g, '')) || 0;
+            else item[field] = input.value;
+            markDirty();
+          });
+        });
+        rowEl.querySelector('.remove-item').addEventListener('click', () => {
+          menu[ci].items.splice(ii, 1); markDirty(); render();
+        });
+      });
+    });
+  }
+
+  function attachSortables() {
+    Sortable.create(els.app, {
+      handle: '.cat-drag', animation: 150, ghostClass: 'sortable-ghost',
+      onEnd: () => {
+        menu = Array.from(document.querySelectorAll('.category')).map((el) => menu[Number(el.dataset.catIndex)]);
+        markDirty(); render();
+      }
+    });
+    document.querySelectorAll('.items').forEach((itemsEl) => {
+      const ci = Number(itemsEl.dataset.itemsFor);
+      Sortable.create(itemsEl, {
+        handle: '.item-drag', animation: 150, ghostClass: 'sortable-ghost',
+        onEnd: () => {
+          menu[ci].items = Array.from(itemsEl.querySelectorAll('.item-row')).map((el) => menu[ci].items[Number(el.dataset.itemIndex)]);
+          markDirty(); render();
+        }
+      });
+    });
+  }
+
+  // ---------- top-level buttons ----------
+  document.getElementById('addCategoryBtn').addEventListener('click', () => {
+    const id = prompt('یه شناسه‌ی کوتاه انگلیسی برای این دسته بذار (مثلاً: drinks-new)');
+    if (!id) return;
+    menu.push({ id: id.trim(), title: 'دسته‌ی جدید', subtitle: '', icon: 'default', items: [] });
+    markDirty(); render();
+  });
+
+  document.getElementById('reloadBtn').addEventListener('click', async () => {
+    if (dirty && !confirm('تغییرات ذخیره‌نشده از بین میره. مطمئنی؟')) return;
+    try { await loadFromGithub(); } catch (err) { setStatus('خطا: ' + err.message, 'error'); }
+  });
+
+  els.saveBtn.addEventListener('click', saveToGithub);
+
+  els.connectBtn.addEventListener('click', async () => {
+    conn = {
+      token: els.token.value.trim(),
+      owner: els.owner.value.trim(),
+      repo: els.repo.value.trim(),
+      branch: els.branch.value.trim() || 'main',
+      path: els.path.value.trim() || 'data/menu.json'
+    };
+    if (!conn.token || !conn.owner || !conn.repo) {
+      setStatus('توکن، صاحب ریپو و اسم ریپو همه لازمن.', 'error');
+      return;
+    }
+    persistSettingsIfWanted();
+    try {
+      await loadFromGithub();
+      els.editToolbar.style.display = 'flex';
+      els.saveBar.style.display = 'flex';
+      els.settingsPanel.open = false;
+    } catch (err) {
+      setStatus('خطا در اتصال: ' + err.message, 'error');
+    }
+  });
+
+  window.addEventListener('beforeunload', (e) => {
+    if (dirty) { e.preventDefault(); e.returnValue = ''; }
+  });
+</script>
+</body>
+</html>
